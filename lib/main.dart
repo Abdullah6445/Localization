@@ -5,8 +5,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
 
-  // final webRouter = MyRouter();
-  // final mobileRouter = getMobileRoutes();
   runApp(
     EasyLocalization(
         supportedLocales: const [
@@ -17,26 +15,29 @@ void main() async {
         fallbackLocale: const Locale('en', 'US'),
         saveLocale: false,
         startLocale: Locale('ur', 'PK'),
-        child: const MyApp()),
+        child: MyApp()),
   );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  MyApp({
+    super.key,
+  });
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        localizationsDelegates: context.localizationDelegates,
-        supportedLocales: context.supportedLocales,
-        locale: context.locale,
-        home: const LocalizationPage());
+      debugShowCheckedModeBanner: false,
+      localizationsDelegates: context.localizationDelegates,
+      supportedLocales: context.supportedLocales,
+      locale: context.locale,
+      home: LocalizationPage(),
+    );
   }
 }
 
 class LocalizationPage extends StatefulWidget {
-  const LocalizationPage({
+  LocalizationPage({
     super.key,
   });
 
@@ -45,15 +46,39 @@ class LocalizationPage extends StatefulWidget {
 }
 
 class _LocalizationPageState extends State<LocalizationPage> {
+  int? data;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Center(
-          child: const Text("my_name",
-                  style: TextStyle(fontWeight: FontWeight.w900, fontSize: 30))
-              .tr(),
-        ),
+        title: Text("app_bar_title",
+                style: TextStyle(fontWeight: FontWeight.w900, fontSize: 30))
+            .tr(),
+        actions: [
+          DropdownMenu(
+            hintText: "language_text".tr(),
+            dropdownMenuEntries: [
+              DropdownMenuEntry(value: 1, label: "urdu"),
+              DropdownMenuEntry(value: 2, label: "english"),
+            ],
+            onSelected: (value) async {
+              data = value;
+              debugPrint("selected " + data.toString());
+
+              if (data == 1) {
+                await context.setLocale(Locale('ur', 'PK'));
+                debugPrint("Urdu selected");
+              } else if (data == 2) {
+                await context.setLocale(Locale('en', 'US'));
+                debugPrint("English selected");
+              }
+            },
+          ),
+        ],
+      ),
+      body: Center(
+        child: Text("content_text").tr(), // Example content text
       ),
     );
   }
